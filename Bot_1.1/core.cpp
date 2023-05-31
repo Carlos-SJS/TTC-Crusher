@@ -157,6 +157,9 @@ board PlayerCore::aply_move(board bd, u64 &move, int player){
 }
 
 int PlayerCore::alpha_beta(board &bd, int depth, int alpha, int beta, int player){
+    if((double)(clock() - start)/CLOCKS_PER_SEC > MAX_TIME)
+        return -inf;
+
     //cout << alpha << " " << beta << " " << depth << " " << player << "\n";
     if((bd.data>>10) > 140)
         return 0;
@@ -251,11 +254,17 @@ u64 PlayerCore::find_move(board bd){
     
     int best = -inf-1;
     u64 best_move = 0;
-    for(u64 m: moves){
-        int v = this->alpha_beta(this->aply_move(bd, m, 0), search_deepness, -inf, inf, 1);
-        
-        if(v > best)
-            best = v, best_move = m;
+
+    for(int deep=0; deep<=140-move_count && (double)(clock() - start)/CLOCKS_PER_SEC < MAX_TIME; deep++){
+        for(u64 m: moves){
+            int v = this->alpha_beta(this->aply_move(bd, m, 0), search_deepness, -inf, inf, 1);
+
+            if((double)(clock() - start)/CLOCKS_PER_SEC > MAX_TIME)
+                break;
+
+            if(v > best)
+                best = v, best_move = m;
+        }
     }
 
     cout << "Expected val: " << best << '\n';
@@ -265,6 +274,8 @@ u64 PlayerCore::find_move(board bd){
 }
 
 vector<vector<int>> PlayerCore::getMove(vector<vector<int>> b){
+    start = clock();
+
     board bd = this->vector_to_board(b);
 
     if(this->bpawn_dir && (bd.black & (15<<12)))

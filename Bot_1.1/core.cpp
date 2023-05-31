@@ -267,9 +267,6 @@ u64 PlayerCore::find_move(board bd){
 vector<vector<int>> PlayerCore::getMove(vector<vector<int>> b){
     board bd = this->vector_to_board(b);
 
-    if(__builtin_popcount(bd.white) > __builtin_popcount(prev_board.white))
-        bcaptures ++;
-
     if(this->bpawn_dir && (bd.black & (15<<12)))
         this -> bpawn_dir ^= 1;
     else if(!this->bpawn_dir && (bd.black & (15)))
@@ -279,6 +276,9 @@ vector<vector<int>> PlayerCore::getMove(vector<vector<int>> b){
     
     if(!(bd.white&65535ll))
         this -> wpawn_dir = this->default_pawnd;
+
+    if(bd.white != prev_board)
+        bcaptures ++;
 
     bd = this->vector_to_board(b);
 
@@ -308,13 +308,14 @@ vector<vector<int>> PlayerCore::getMove(vector<vector<int>> b){
 
 
     this->move_count+=2;
-    prev_board = bd;
+    prev_board = bd.white;
     return board_to_vector(bd);
 }
 
 void PlayerCore::reset(int color){
     this -> wcaptures = 0;
     this -> bcaptures = 0;
+    prev_board = 0;
 
     if(color == 0)
         this -> move_count = 1;

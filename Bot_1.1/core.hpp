@@ -43,7 +43,7 @@ class PlayerCore{
         clock_t start;
         clock_t current;
 
-        board prev_board;
+        u64 prev_board;
 
         // Methodes
 

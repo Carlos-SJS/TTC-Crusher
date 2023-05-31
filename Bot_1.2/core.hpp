@@ -56,6 +56,9 @@ class PlayerCore{
         int evaluate(board &bd);
         board aply_move(board bd, u64 &move, int player);
 
+        int rnd_off[2] = {0,0};
+        int off_index = 0;
+
     public:
 
         PlayerCore();

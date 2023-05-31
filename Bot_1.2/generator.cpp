@@ -40,7 +40,7 @@ void generator::get_moves(board &b, u16 side, vector<u64>& moves){
     u16 other = (other_board&board_mask)|((other_board>>16)&board_mask)|((other_board>>32)&board_mask)|((other_board>>48)&board_mask);
     u16 all = other|(bd&board_mask)|((bd>>16)&board_mask)|((bd>>32)&board_mask)|((bd>>48)&board_mask);
     
-    u16 pawn_dir = (b.data>>side)&(1<<side);
+    u16 pawn_dir = (b.data>>side)&1;
 
     //print_board_(other);
     //print_board_(all);

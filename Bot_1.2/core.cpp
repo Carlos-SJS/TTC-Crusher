@@ -93,7 +93,7 @@ int PlayerCore::evaluate(board &bd){
     eval += 1 << ((5-((bd.data >> 2)&7))<<1);
     eval -= 1 << ((5-((bd.data >> 5)&7))<<1);
 
-    return eval;
+    return eval + rnd_off[off_index^=1];
 }
 
 // This function should apply the move and do some checks
@@ -293,8 +293,6 @@ vector<vector<int>> PlayerCore::getMove(vector<vector<int>> b){
     else if(!this->bpawn_dir && (bd.black & (15)))
         this -> bpawn_dir ^= 1;
     
-    cout << "Pawn dir: " << (bd.data&1) << '\n';
-    
     if(!(bd.white&65535ll))
         this -> wpawn_dir = this->default_pawnd;
 
@@ -302,6 +300,9 @@ vector<vector<int>> PlayerCore::getMove(vector<vector<int>> b){
         bcaptures ++;
 
     bd = this->vector_to_board(b);
+
+    cout << "wPawn dir: " << (bd.data&1) << '\n';
+    cout << "bPawn dir: " << (bd.data&2) << '\n';
 
     // Search for best move
     u64 m = this -> find_move(bd);
@@ -311,7 +312,6 @@ vector<vector<int>> PlayerCore::getMove(vector<vector<int>> b){
     if(bd.black & (p|(p<<16)|(p<<32)|(p<<48)))
         this -> wcaptures++;
     
-    cout << "Pawn dir: " << wpawn_dir << '\n';
     if(this->wpawn_dir && (bd.white & (15<<12)))
         this -> wpawn_dir ^= 1;
     else if(!this->wpawn_dir && (bd.white & (15)))
@@ -346,4 +346,8 @@ void PlayerCore::reset(int color){
     this -> default_pawnd = 0;
     this -> wpawn_dir = this -> default_pawnd;
     this -> bpawn_dir = this -> default_pawnd^1;
+
+    rnd_off[0] = ((rand())%21)-10;
+    rnd_off[1] = ((rand())%21)-10;
+    off_index = rand()%2;
 }

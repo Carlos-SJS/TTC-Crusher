@@ -182,7 +182,7 @@ int PlayerCore::alpha_beta(board &bd, int depth, int alpha, int beta, int player
             return inf;
         }
         if(check_win(black)){
-            //cout << "reached b win\n";
+            //cout << "reached b win at white\n";
             return -inf;
         }
         
@@ -210,7 +210,7 @@ int PlayerCore::alpha_beta(board &bd, int depth, int alpha, int beta, int player
             return inf;
         }
         if(check_win(black)){
-            //cout << "reached b win\n";
+            //cout << "reached b win at black\n";
             return -inf;
         }
 
@@ -258,8 +258,21 @@ u64 PlayerCore::find_move(board bd){
     int max_depth_reached = 0;
 
     for(int deep=1; deep<=140-move_count && (double)(clock() - start)/CLOCKS_PER_SEC < MAX_TIME; deep++){
-        max_depth_reached ++;
+        if(best >= inf)
+            break;
+        best = -inf-1;
+        
+        if(best_move != 0){
+            int v = this->alpha_beta(this->aply_move(bd, best_move, 0), deep, -inf, inf, 1);
+
+            if(v > best)
+                best = v;
+        }
+        
         for(u64 m: moves){
+            if(m==best_move)
+                continue;
+
             int v = this->alpha_beta(this->aply_move(bd, m, 0), deep, -inf, inf, 1);
 
             if((double)(clock() - start)/CLOCKS_PER_SEC > MAX_TIME)
@@ -268,6 +281,7 @@ u64 PlayerCore::find_move(board bd){
             if(v > best)
                 best = v, best_move = m;
         }
+        max_depth_reached ++;
     }
 
     cout << "Expected val: " << best << '\n';

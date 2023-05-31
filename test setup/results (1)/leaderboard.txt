@@ -1,3 +1,0 @@
-Rank (name, won_matches, won_games, drew_matches, drew_games)
-1 ('Gennedy Korotkevich', 1, 16, 0, 2)
-2 ('juan', 0, 2, 0, 2)

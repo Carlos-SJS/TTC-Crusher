@@ -255,9 +255,12 @@ u64 PlayerCore::find_move(board bd){
     int best = -inf-1;
     u64 best_move = 0;
 
-    for(int deep=0; deep<=140-move_count && (double)(clock() - start)/CLOCKS_PER_SEC < MAX_TIME; deep++){
+    int max_depth_reached = 0;
+
+    for(int deep=1; deep<=140-move_count && (double)(clock() - start)/CLOCKS_PER_SEC < MAX_TIME; deep++){
+        max_depth_reached ++;
         for(u64 m: moves){
-            int v = this->alpha_beta(this->aply_move(bd, m, 0), search_deepness, -inf, inf, 1);
+            int v = this->alpha_beta(this->aply_move(bd, m, 0), deep, -inf, inf, 1);
 
             if((double)(clock() - start)/CLOCKS_PER_SEC > MAX_TIME)
                 break;
@@ -269,6 +272,7 @@ u64 PlayerCore::find_move(board bd){
 
     cout << "Expected val: " << best << '\n';
     cout << "Cut offs: " << cut_offs << '\n';
+    cout << "Searh depth: " << max_depth_reached << '\n';
 
     return best_move;
 }

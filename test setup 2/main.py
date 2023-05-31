@@ -1,6 +1,7 @@
 from round_robin import RoundRobin
-from Rompe import Rompe
+from PlayerBot import TTCPlayer
 from TTC_Crusher import TTC_Crusher_Player
+from TuriBase import TuriBase_player
 
 def print_winner():
     with open('results/leaderboard.txt', 'r') as f:
@@ -18,13 +19,14 @@ def print_winner():
         print(f"The winner is: {winner}")
         print(f"{wscore} - {lscore}")
 
-player1 = Rompe("rope-turi-8c")
+#player1 = TTCPlayer("Kongroo")
+player1 = TuriBase_player("Base bot")
 player2 = TTC_Crusher_Player("Gennedy Korotkevich")
 #player3 = TTCPlayer("juan3")
 #player4 = TTCPlayer("juan4")
 
 if __name__ == '__main__':
-    tournament = RoundRobin([player1, player2], 20, 5, 70)
-    tournament.start()
+    tournament = RoundRobin([player1, player2], 10, 5, 70)
+    tournament.start()  
     
     print_winner()

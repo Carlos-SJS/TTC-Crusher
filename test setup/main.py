@@ -24,7 +24,7 @@ player2 = TTC_Crusher_Player("Gennedy Korotkevich")
 #player4 = TTCPlayer("juan4")
 
 if __name__ == '__main__':
-    tournament = RoundRobin([player1, player2], 150, 5, 70)
+    tournament = RoundRobin([player1, player2], 20, 5, 70)
     tournament.start()
     
     print_winner()

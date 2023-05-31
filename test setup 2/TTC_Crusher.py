@@ -43,8 +43,8 @@ class TTC_Crusher_Player:
         #for l in new_world:
         #    print(l)
         
-        self.__printBoard(world)
-        self.__printBoard(new_world)
+        #self.__printBoard(world)
+        #self.__printBoard(new_world)
         
         print("Time taken D: ", time.time() - start)
         

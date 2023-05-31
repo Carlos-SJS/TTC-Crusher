@@ -10,7 +10,7 @@ cpp_args = ['-std=c++17', '-stdlib=libc++']
 
 ext_modules = [
     Extension(
-    'PlayerCore',
+    'PlayerCoreBase',
         ['core.cpp', 'generator.cpp', 'wrap.cpp'],
         include_dirs=['pybind11/include', 'C:/Users/carlo/AppData/Local/Programs/Python/Python311/include', 'G:/Mi unidad/Up/TTC Crusher/Bot_1.0'],
     language='c++',
@@ -19,7 +19,7 @@ ext_modules = [
 ]
 
 setup(
-    name='PlayerCore',
+    name='PlayerCoreBase',
     version='0.0.1',
     author='your mom lol',
     author_email='your_mom69@hotmail.com',

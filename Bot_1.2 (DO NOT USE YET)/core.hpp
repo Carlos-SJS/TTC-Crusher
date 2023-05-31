@@ -3,6 +3,7 @@
 #include <vector>
 #include <random>
 #include <time.h>
+#include <unordered_map>
 
 #include "util.hpp"
 using namespace std;
@@ -21,8 +22,6 @@ const u64 vertical = 1ll|(1ll<<4)|(1ll<<8)|(1ll<<12);
 
 const double MAX_TIME = .8;
 
-const int search_deepness = 4;
-
 class PlayerCore{
     private:
         // Fields
@@ -37,6 +36,8 @@ class PlayerCore{
         int cut_offs = 0;
 
         u64 move_count = 0;
+
+        int search_deepness = 0;
 
         bool idle=1;
 
@@ -55,6 +56,10 @@ class PlayerCore{
         int alpha_beta(board &bd, int depth, int alpha, int beta, int player);
         int evaluate(board &bd);
         board aply_move(board bd, u64 &move, int player);
+        int board_to_sq(int x);
+
+
+        unordered_map<u64, pair<int, int>> postion_history;
 
     public:
 

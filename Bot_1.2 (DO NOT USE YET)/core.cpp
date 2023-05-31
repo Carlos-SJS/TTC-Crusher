@@ -33,6 +33,7 @@ board PlayerCore::vector_to_board(vector<vector<int>> &bd){
     b.white = 0;
     b.black = 0;
     b.data = 0;
+    b.hash = 0;
 
     u64 p = 1;
 
@@ -40,10 +41,13 @@ board PlayerCore::vector_to_board(vector<vector<int>> &bd){
         for(int j=0; j<4; j++){
             //print_board(p);
             //cout << bd[i][j] << '\n';
-            if(bd[i][j] > 0)
+            if(bd[i][j] > 0){
                 b.white |= (p<<shift[bd[i][j]]);
-            else if(bd[i][j] < 0)
+                b.hash ^= pice_hash_code[(bd[i][j]-1)*2][4*i+j];
+            }else if(bd[i][j] < 0){
                 b.black |= (p<<shift[-bd[i][j]]);
+                b.hash ^= pice_hash_code[((-bd[i][j])-1)*2+1][4*i+j];
+            }
             p<<=1;
         }
     }
@@ -53,6 +57,11 @@ board PlayerCore::vector_to_board(vector<vector<int>> &bd){
     b.data |= this->wcaptures<<2;
     b.data |= this->bcaptures<<5;
     b.data |= this->move_count << 10;
+
+    b.hash ^= pawn_direction_h[0][wpawn_dir];
+    b.hash ^= pawn_direction_h[1][bpawn_dir];
+    b.hash ^= captures_h[0][wcaptures];
+    b.hash ^= captures_h[1][bcaptures];
 
     return b;
 } 
@@ -81,6 +90,15 @@ vector<vector<int>> PlayerCore::board_to_vector(board &b){
     return bd;
 }
 
+// Magic shit that i do not understand but is really cool or something
+int PlayerCore::board_to_sq(int x){
+    uint64_t y = x^(x-1);
+
+    uint8_t z = (debruijn*y) >> 58;
+
+    return lookup[z];
+}
+
 // Evaluate a given position
 // How? IDK.
 int PlayerCore::evaluate(board &p){
@@ -94,62 +112,94 @@ board PlayerCore::aply_move(board bd, u64 &move, int player){
     if(player){ // Black (inferior side)
         // Check pawn dirs or something
         if((bd.data&1) && (bd.white&(15<<12)))
-            bd.data ^= 1;
+            bd.data ^= 1, bd.hash ^= pawn_direction_h[0][0]^pawn_direction_h[0][1];
         if(!(bd.data&1) && (bd.white&(15)))
-            bd.data ^= 1;
+            bd.data ^= 1, bd.hash ^= pawn_direction_h[0][0]^pawn_direction_h[0][1];
         
-        if(!(bd.black&bmask))
-            bd.data ^= (bd.data&2), bd.data |= ((this->default_pawnd^1)<<1);
+        if(!(bd.black&bmask)){
+            bd.hash ^= pawn_direction_h[1][bd.data&2]^pawn_direction_h[1][default_pawnd^1];
+            bd.data ^= (bd.data&2);
+            bd.data |= ((this->default_pawnd^1)<<1);
+        }
 
         // Apply move to bit board
         bd.black ^= ((move>>16)&bmask) << (move&63);
+        bd.hash ^= pice_hash_code[((move&63)>>3)*2+1][board_to_sq(((move>>16)&bmask))];
 
         u64 nw = (move>>32)&bmask, cp = (nw|(nw<<16)|(nw<<32)|(nw<<48));
         bd.black |= nw<<(move&63);
+        bd.hash ^= pice_hash_code[((move&63)>>3)*2+1][board_to_sq(nw)];
 
-        if(bd.white & cp)
-            bd.data += 32;      
+        if(bd.white & cp){
+            bd.hash ^= captures_h[1][(bd.data>>5)&7] ^ captures_h[1][(bd.data>>5)&7+1];
 
-        bd.white &= ~cp;
+            if(bd.white&bmask) bd.hash ^= pice_hash_code[0][board_to_sq(nw)];
+            if((bd.white>>16)&bmask) bd.hash ^= pice_hash_code[2][board_to_sq(nw)];
+            if((bd.white>>32)&bmask) bd.hash ^= pice_hash_code[4][board_to_sq(nw)];
+            if((bd.white>>48)&bmask) bd.hash ^= pice_hash_code[6][board_to_sq(nw)];
+
+            bd.data += 32;
+            bd.white &= ~cp;
+        }
 
         // Pawn shit
         if((bd.data&2) && (bd.black&(15<<12)))
-            bd.data ^= 2;
+            bd.data ^= 2, bd.hash ^= pawn_direction_h[1][0]^pawn_direction_h[1][1];
         if(!(bd.data&2) && (bd.black&(15)))
-            bd.data ^= 2;
+            bd.data ^= 2, bd.hash ^= pawn_direction_h[1][0]^pawn_direction_h[1][1];
 
-        if(!(bd.white&bmask))
-            bd.data ^= (bd.data&1), bd.data |= this->default_pawnd;
+        if(!(bd.white&bmask)){
+            bd.hash ^= pawn_direction_h[0][bd.data&2]^pawn_direction_h[0][default_pawnd];
+
+            bd.data ^= (bd.data&1);
+            bd.data |= this->default_pawnd;
+        }
 
     }else{ // The same shit but white, so it is a little better
         // Something i guess
         if((bd.data&2) && (bd.black&(15<<12)))
-            bd.data ^= 2;
+            bd.data ^= 2, bd.hash ^= pawn_direction_h[1][0]^pawn_direction_h[1][1];
         if(!(bd.data&2) && (bd.black&(15)))
-            bd.data ^= 2;
+            bd.data ^= 2, bd.hash ^= pawn_direction_h[1][0]^pawn_direction_h[1][1];
         
-        if(!(bd.white&bmask))
-            bd.data ^= (bd.data&1), bd.data |= this->default_pawnd;
+        if(!(bd.white&bmask)){
+            bd.hash ^= pawn_direction_h[0][bd.data&2]^pawn_direction_h[0][default_pawnd];
+
+            bd.data ^= (bd.data&1);
+            bd.data |= this->default_pawnd;
+        }
 
         // Apply move to bit board
         bd.white ^= ((move>>16)&bmask) << ((move&63));
+        bd.hash ^= pice_hash_code[((move&63)>>3)*2][board_to_sq(((move>>16)&bmask))];
 
         u64 nw = (move>>32)&bmask, cp = (nw|(nw<<16)|(nw<<32)|(nw<<48));
         bd.white |= nw<<(move&63);
+        bd.hash ^= pice_hash_code[((move&63)>>3)*2+1][board_to_sq(nw)];
 
-        if(bd.black & cp)
+        if(bd.black & cp){
+            bd.hash ^= captures_h[0][(bd.data>>2)&7] ^ captures_h[0][(bd.data>>2)&7+1];
+
+            if(bd.black&bmask) bd.hash ^= pice_hash_code[1][board_to_sq(nw)];
+            if((bd.black>>16)&bmask) bd.hash ^= pice_hash_code[3][board_to_sq(nw)];
+            if((bd.black>>32)&bmask) bd.hash ^= pice_hash_code[5][board_to_sq(nw)];
+            if((bd.black>>48)&bmask) bd.hash ^= pice_hash_code[7][board_to_sq(nw)];
+
             bd.data += 4;      
-
-        bd.black &= ~cp;
+            bd.black &= ~cp;
+        }
 
         // Pawn shit
         if((bd.data&1) && (bd.white&(15<<12)))
-            bd.data ^= 1;
+            bd.data ^= 1, bd.hash ^= pawn_direction_h[0][0]^pawn_direction_h[0][1];
         if(!(bd.data&1) && (bd.white&(15)))
-            bd.data ^= 1;
+            bd.data ^= 1, bd.hash ^= pawn_direction_h[0][0]^pawn_direction_h[0][1];
 
-        if(!(bd.black&bmask))
-            bd.data ^= (bd.data&2), bd.data |= ((this->default_pawnd^1)<<1);
+        if(!(bd.black&bmask)){
+            bd.hash ^= pawn_direction_h[1][bd.data&2]^pawn_direction_h[1][default_pawnd^1];
+            bd.data ^= (bd.data&2);
+            bd.data |= ((this->default_pawnd^1)<<1);
+        }
     }
     
     bd.data += 1ll<<10;
@@ -163,6 +213,11 @@ int PlayerCore::alpha_beta(board &bd, int depth, int alpha, int beta, int player
     //cout << alpha << " " << beta << " " << depth << " " << player << "\n";
     if((bd.data>>10) > 140)
         return 0;
+
+    if(postion_history.count(bd.hash)){
+        auto pos = postion_history[bd.hash];
+        if(pos.second >= depth && pos.second + (bd.data>>10) <= 140) return pos.first;
+    }
 
     if(depth == 0){ // Should also check if node is terminal (someone won, or draw and shit)
         // Should return heuristic value *w*
@@ -182,7 +237,7 @@ int PlayerCore::alpha_beta(board &bd, int depth, int alpha, int beta, int player
             return inf;
         }
         if(check_win(black)){
-            //cout << "reached b win\n";
+            //cout << "reached b win at white\n";
             return -inf;
         }
         
@@ -194,7 +249,14 @@ int PlayerCore::alpha_beta(board &bd, int depth, int alpha, int beta, int player
         int v = -inf;
         
         for(u64 m: moves){
-            v = max(v, this->alpha_beta(this->aply_move(bd, m, 0), depth-1, alpha, beta, 1));
+            board nx = this->aply_move(bd, m, 0);
+            int nxv = this->alpha_beta(nx, depth-1, alpha, beta, 1);
+            v = max(v, nxv);
+
+            if((bd.data>>10) + depth < 140){
+                if(!postion_history.count(nx.hash) || postion_history[nx.hash].second < depth)
+                    postion_history[nx.hash] = {nxv, depth-1};
+            }
         
             alpha = max(alpha, v);
             if(v >= beta){
@@ -210,7 +272,7 @@ int PlayerCore::alpha_beta(board &bd, int depth, int alpha, int beta, int player
             return inf;
         }
         if(check_win(black)){
-            //cout << "reached b win\n";
+            //cout << "reached b win at black\n";
             return -inf;
         }
 
@@ -223,7 +285,12 @@ int PlayerCore::alpha_beta(board &bd, int depth, int alpha, int beta, int player
         int v = inf;
 
         for(u64 m: moves){
-            v = min(v, this->alpha_beta(this->aply_move(bd, m, 1), depth-1, alpha, beta, 0));
+            board nx = this->aply_move(bd, m, 1);
+            int nxv = this->alpha_beta(nx, depth-1, alpha, beta, 0);
+            v = min(v, nxv);
+
+            if(!postion_history.count(nx.hash) || postion_history[nx.hash].second < depth)
+                    postion_history[nx.hash] = {nxv, depth-1};
 
             beta = min(beta, v);
             if(v < alpha){
@@ -255,9 +322,25 @@ u64 PlayerCore::find_move(board bd){
     int best = -inf-1;
     u64 best_move = 0;
 
-    for(int deep=0; deep<=140-move_count && (double)(clock() - start)/CLOCKS_PER_SEC < MAX_TIME; deep++){
+    int max_depth_reached = 0;
+
+    for(int deep=1; deep<=140-move_count && (double)(clock() - start)/CLOCKS_PER_SEC < MAX_TIME; deep++){
+        if(best >= inf)
+            break;
+        best = -inf-1;
+        
+        if(best_move != 0){
+            int v = this->alpha_beta(this->aply_move(bd, best_move, 0), deep, -inf, inf, 1);
+
+            if(v > best)
+                best = v;
+        }
+        
         for(u64 m: moves){
-            int v = this->alpha_beta(this->aply_move(bd, m, 0), search_deepness, -inf, inf, 1);
+            if(m==best_move)
+                continue;
+
+            int v = this->alpha_beta(this->aply_move(bd, m, 0), deep, -inf, inf, 1);
 
             if((double)(clock() - start)/CLOCKS_PER_SEC > MAX_TIME)
                 break;
@@ -265,10 +348,12 @@ u64 PlayerCore::find_move(board bd){
             if(v > best)
                 best = v, best_move = m;
         }
+        max_depth_reached ++;
     }
 
     cout << "Expected val: " << best << '\n';
     cout << "Cut offs: " << cut_offs << '\n';
+    cout << "Searh depth: " << max_depth_reached << '\n';
 
     return best_move;
 }
@@ -336,4 +421,6 @@ void PlayerCore::reset(int color){
     this -> default_pawnd = 0;
     this -> wpawn_dir = this -> default_pawnd;
     this -> bpawn_dir = this -> default_pawnd^1;
+
+    //postion_history.clear();
 }

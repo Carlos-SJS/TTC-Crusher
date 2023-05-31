@@ -1,0 +1,14 @@
+Debugging
+    [X] Re write check win macro
+    [X] Re do apply move function or at least fully debug
+    [x] Check and debug alpha beta function for potential eval errors
+    [x] Handle move count for ebery player on search and generator (might need to do changes to move data, and fenerator captures macro)
+
+Improvements
+    [-] Iterative deeening
+    [-] Move orderings
+
+    [-] Position hashing (ideally perfect)
+    [-] Transposition table
+
+

@@ -1,0 +1,4 @@
+- Use alpha-beta with iterative deepening
+- Use transposition table
+
+Check NegaScout or PVS

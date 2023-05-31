@@ -1,0 +1,6 @@
+Fixes
+    [x] Pawn captures to empty squares
+    [x] Rook doesn't correctly identify blockers when is an adjacent friendly piece
+
+Generator
+    [x] Redo pawn move gen, separating captures from moves 

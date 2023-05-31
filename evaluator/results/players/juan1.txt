@@ -1,0 +1,1 @@
+{'won_match': 0, 'drew_match': 0, 'lost_match': 1, 'won_games': 10, 'drew_games': 6, 'lost_games': 14, 'raised_errors': 0, 'invalid_moves': 0, 'early_movements': 0, 'max_captures_exceeded': 0, 'best_against': 'juan2', 'best_won_games': 10, 'worst_against': 'juan2', 'worst_won_games': 10}

@@ -1,0 +1,3 @@
+Rank (name, won_matches, won_games, drew_matches, drew_games)
+1 ('juan2', 1, 14, 0, 6)
+2 ('juan1', 0, 10, 0, 6)

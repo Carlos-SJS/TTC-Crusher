@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.22000.0",
+            "compilerPath": "C:/MinGW/bin/g++.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "windows-msvc-x64",
+            "compilerArgs": [
+                "\"C:\\Program Files\\Python311\\include\"",
+                "\"C:/Users/carlo/AppData/Local/Programs/Python/Python311/include\""
+            ]
+        }
+    ],
+    "version": 4
+}

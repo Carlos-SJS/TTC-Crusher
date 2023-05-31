@@ -1,0 +1,7 @@
+Board representation ideas
+    - Original representation (Matrix with value)
+    - Vector4 for white, and for black, with the position of each piece (better for look ups, memory and reduced processing)
+
+Move generation
+    - Normal implementation
+    - Precalculated + magicks

@@ -1,1 +1,1 @@
-{'won_match': 1, 'drew_match': 0, 'lost_match': 0, 'won_games': 500, 'drew_games': 0, 'lost_games': 0, 'raised_errors': 0, 'invalid_moves': 0, 'early_movements': 0, 'max_captures_exceeded': 0, 'best_against': 'juan', 'best_won_games': 500, 'worst_against': 'juan', 'worst_won_games': 500}
+{'won_match': 1, 'drew_match': 0, 'lost_match': 0, 'won_games': 20, 'drew_games': 0, 'lost_games': 0, 'raised_errors': 0, 'invalid_moves': 0, 'early_movements': 0, 'max_captures_exceeded': 0, 'best_against': 'juan', 'best_won_games': 20, 'worst_against': 'juan', 'worst_won_games': 20}

@@ -610,7 +610,6 @@ class TTCPlayer:
 
         return newBoard
                     
-
     def reset(self):
         self.pawnDirection = -1
         self.piecesOnBoard = [0] * 5

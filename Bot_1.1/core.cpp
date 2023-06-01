@@ -3,7 +3,7 @@
 
 #include<iostream>
  
-PlayerCore::PlayerCore(){
+PlayerCoreBase::PlayerCoreBase(){
     srand(time(NULL));
 }
 
@@ -28,7 +28,7 @@ void print_board(u16 b){
 
 
 int shift[] = {0, 0, 32, 16, 48};
-board PlayerCore::vector_to_board(vector<vector<int>> &bd){
+board PlayerCoreBase::vector_to_board(vector<vector<int>> &bd){
     board b;
     b.white = 0;
     b.black = 0;
@@ -57,7 +57,7 @@ board PlayerCore::vector_to_board(vector<vector<int>> &bd){
     return b;
 } 
 
-vector<vector<int>> PlayerCore::board_to_vector(board &b){
+vector<vector<int>> PlayerCoreBase::board_to_vector(board &b){
     vector<vector<int>> bd(4, vector<int>(4, 0));
 
     u64 p = 1;
@@ -83,13 +83,13 @@ vector<vector<int>> PlayerCore::board_to_vector(board &b){
 
 // Evaluate a given position
 // How? IDK.
-int PlayerCore::evaluate(board &p){
+int PlayerCoreBase::evaluate(board &p){
     return 5-wcaptures;
 }
 
 // This function should apply the move and do some checks
 // That is, if it works c:
-board PlayerCore::aply_move(board bd, u64 &move, int player){
+board PlayerCoreBase::aply_move(board bd, u64 &move, int player){
 
     if(player){ // Black (inferior side)
         // Check pawn dirs or something
@@ -156,7 +156,7 @@ board PlayerCore::aply_move(board bd, u64 &move, int player){
     return bd;
 }
 
-int PlayerCore::alpha_beta(board &bd, int depth, int alpha, int beta, int player){
+int PlayerCoreBase::alpha_beta(board &bd, int depth, int alpha, int beta, int player){
     if((double)(clock() - start)/CLOCKS_PER_SEC > MAX_TIME)
         return -inf;
 
@@ -166,7 +166,7 @@ int PlayerCore::alpha_beta(board &bd, int depth, int alpha, int beta, int player
 
     if(depth == 0){ // Should also check if node is terminal (someone won, or draw and shit)
         // Should return heuristic value *w*
-        return PlayerCore::evaluate(bd);
+        return PlayerCoreBase::evaluate(bd);
     }
     
     vector<u64> moves;
@@ -237,7 +237,7 @@ int PlayerCore::alpha_beta(board &bd, int depth, int alpha, int beta, int player
 }
 
 // Do alpha-beta prunning shit
-u64 PlayerCore::find_move(board bd){
+u64 PlayerCoreBase::find_move(board bd){
     vector<u64> moves;
     generator::get_moves(bd, 0, moves);
 
@@ -299,7 +299,7 @@ u64 PlayerCore::find_move(board bd){
     return true_best_move;
 }
 
-vector<vector<int>> PlayerCore::getMove(vector<vector<int>> b){
+vector<vector<int>> PlayerCoreBase::getMove(vector<vector<int>> b){
     start = clock();
 
     board bd = this->vector_to_board(b);
@@ -349,7 +349,7 @@ vector<vector<int>> PlayerCore::getMove(vector<vector<int>> b){
     return board_to_vector(bd);
 }
 
-void PlayerCore::reset(int color){
+void PlayerCoreBase::reset(int color){
     this -> wcaptures = 0;
     this -> bcaptures = 0;
     prev_board = 0;

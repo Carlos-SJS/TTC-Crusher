@@ -5,9 +5,9 @@
 namespace py = pybind11;
 using namespace pybind11::literals;
 
-PYBIND11_MODULE(PlayerCore, m) {
-    py::class_<PlayerCore>(m, "PlayerCore")
+PYBIND11_MODULE(PlayerCoreBase, m) {
+    py::class_<PlayerCoreBase>(m, "PlayerCoreBase")
         .def(py::init())
-        .def("getMove", &PlayerCore::getMove)
-        .def("reset", &PlayerCore::reset);
+        .def("getMove", &PlayerCoreBase::getMove)
+        .def("reset", &PlayerCoreBase::reset);
 }   

@@ -1,1 +1,1 @@
-{'won_match': 1, 'drew_match': 0, 'lost_match': 0, 'won_games': 10, 'drew_games': 0, 'lost_games': 0, 'raised_errors': 0, 'invalid_moves': 0, 'early_movements': 0, 'max_captures_exceeded': 0, 'best_against': 'Coca', 'best_won_games': 10, 'worst_against': 'Coca', 'worst_won_games': 10}
+{'won_match': 1, 'drew_match': 0, 'lost_match': 0, 'won_games': 10, 'drew_games': 0, 'lost_games': 0, 'raised_errors': 0, 'invalid_moves': 0, 'early_movements': 0, 'max_captures_exceeded': 0, 'best_against': 'Base bot', 'best_won_games': 10, 'worst_against': 'Base bot', 'worst_won_games': 10}

@@ -23,7 +23,7 @@ const double MAX_TIME = .8;
 
 const int search_deepness = 4;
 
-class PlayerCore{
+class PlayerCoreBase{
     private:
         // Fields
         int default_pawnd = 0;
@@ -58,7 +58,7 @@ class PlayerCore{
 
     public:
 
-        PlayerCore();
+        PlayerCoreBase();
         void reset(int color);
         vector<vector<int>> getMove(vector<vector<int>>);
 

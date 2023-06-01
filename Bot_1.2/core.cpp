@@ -197,7 +197,7 @@ int PlayerCore::alpha_beta(board &bd, int depth, int alpha, int beta, int player
         
             alpha = max(alpha, v);
             if(v >= beta){
-                cut_offs++;
+                //cut_offs++;
                 break;
             }
         }
@@ -211,7 +211,7 @@ int PlayerCore::alpha_beta(board &bd, int depth, int alpha, int beta, int player
 
             beta = min(beta, v);
             if(v < alpha){
-                cut_offs++;
+                //cut_offs++;
                 break;
             }
         }
@@ -225,14 +225,14 @@ u64 PlayerCore::find_move(board bd){
     vector<u64> moves;
     generator::get_moves(bd, 0, moves);
 
-    cut_offs = 0;
+    //cut_offs = 0;
 
-    cout << "Move count: " << (bd.data>>10) << '\n';
-    cout << "wCaps: " << wcaptures << "(" << ((bd.data>>2)&7) << ")\n";
-    cout << "bCaps: " << bcaptures << "(" << ((bd.data>>5)&7) << ")\n";
+    //cout << "Move count: " << (bd.data>>10) << '\n';
+    //cout << "wCaps: " << wcaptures << "(" << ((bd.data>>2)&7) << ")\n";
+    //cout << "bCaps: " << bcaptures << "(" << ((bd.data>>5)&7) << ")\n";
 
     if(moves.size() == 0){
-        cout << "No moves :c\n";
+        //cout << "No moves :c\n";
         return 0;
     }
     
@@ -276,9 +276,9 @@ u64 PlayerCore::find_move(board bd){
             break;
     }
 
-    cout << "Expected val: " << true_ev << '\n';
-    cout << "Cut offs: " << cut_offs << '\n';
-    cout << "Searh depth: " << max_depth_reached << '\n';
+    //cout << "Expected val: " << true_ev << '\n';
+    //cout << "Cut offs: " << cut_offs << '\n';
+    //cout << "Searh depth: " << max_depth_reached << '\n';
 
     return true_best_move;
 }
@@ -301,8 +301,8 @@ vector<vector<int>> PlayerCore::getMove(vector<vector<int>> b){
 
     bd = this->vector_to_board(b);
 
-    cout << "wPawn dir: " << (bd.data&1) << '\n';
-    cout << "bPawn dir: " << (bd.data&2) << '\n';
+    //cout << "wPawn dir: " << (bd.data&1) << '\n';
+    //cout << "bPawn dir: " << (bd.data&2) << '\n';
 
     // Search for best move
     u64 m = this -> find_move(bd);

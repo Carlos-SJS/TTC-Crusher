@@ -130,7 +130,7 @@ board PlayerCore::aply_move(board bd, u64 &move, int player){
         if(!(bd.white&bmask))
             bd.data ^= (bd.data&1), bd.data |= this->default_pawnd;
 
-    }else{ // The same shit but white, so it is a little better
+    }else{
         // Something i guess
         if((bd.data&2) && (bd.black&(15<<12)))
             bd.data ^= 2;
